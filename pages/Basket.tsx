@@ -1,9 +1,13 @@
 import React from 'react';
+import ProductList from '../components/ProductList';
+import BasketComp from '../components/BasketComp'
+import '../css/Basket.css'
 
 function Basket() {
     return (
-        <div>
-            <h1>Basket</h1>
+        <div className='basketpagewrapper'>
+            <ProductList isModalEnabled={false}/>
+            <BasketComp />
         </div>
     );
 }

@@ -41,7 +41,7 @@ function AddProductForm() {
             !productData.shortDescription ||
             productData.imgURL.some(url => !url)
         ) {
-            setError('Fyll i alla obligatoriska fält.');
+            setError('Fyll i alla fält.');
             return;
         }
 

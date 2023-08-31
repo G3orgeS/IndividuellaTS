@@ -5,7 +5,7 @@ import '../css/SingleProduct.css'; // Importera den nya CSS-filen
 interface SingleProductProps {
     product: Product;
 }
-
+// prop is in cart, ändrar om jag har korgen 
 const SingleProduct: React.FC<SingleProductProps> = ({ product }) => {
     return (
         <div className="single-product">

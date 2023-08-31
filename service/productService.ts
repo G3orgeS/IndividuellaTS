@@ -2,11 +2,11 @@ import { db } from '../firebase/config';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 export interface Product {
-    category: string;
-    imgURL: string[];  
-    price: number;
-    shortDescription: string;
-    title: string;
+    category:           string;
+    imgURL:             string[];
+    price:              number;
+    shortDescription:   string;
+    title:              string;
 }
 
 async function fetchProducts(): Promise<Product[]> {
@@ -28,11 +28,11 @@ async function fetchProducts(): Promise<Product[]> {
 async function addProduct(product: Product): Promise<void> {
     try {
         const productsCollectionRef = collection(db, 'Products');
-        console.log('Before addDoc');
+        // console.log('Before addDoc');
         addDoc(productsCollectionRef, product);
-        console.log(productsCollectionRef, product)
-        console.log('After addDoc');
-        console.log('Product added successfully!');
+        // console.log(productsCollectionRef, product)
+        // console.log('After addDoc');
+        // console.log('Product added successfully!');
     } catch (error) {
         console.error('Error adding product:', error);
     }

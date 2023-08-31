@@ -1,0 +1,10 @@
+.basketpagewrapper {
+    display: flex;
+    flex-direction: row;
+}
+.divwrapper {
+    width: 50vw;
+    height: 50vw;
+    border: solid 1px black;
+    margin: 45px;
+}

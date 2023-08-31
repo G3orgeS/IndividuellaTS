@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { fetchProducts, Product } from '../service/productService';
 import SingleProduct from './SingleProduct';
-import '../css/ProductList.css'; // Importera den nya CSS-filen
+import '../css/ProductList.css';
 
-function ProductList() {
+interface ProductListProps {
+  isModalEnabled: boolean;
+}
+
+function ProductList({ isModalEnabled }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -17,7 +21,9 @@ function ProductList() {
   }, []);
 
   const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
+    if (isModalEnabled) {
+      setSelectedProduct(product);
+    }
   };
 
   const closeModal = () => {
@@ -31,15 +37,13 @@ function ProductList() {
         {products.map((product, index) => (
           <li key={index} onClick={() => handleProductClick(product)}>
             {product.title}
-            {/* : {product.price} */}
           </li>
         ))}
       </ul>
 
-      {selectedProduct && (
+      {selectedProduct && isModalEnabled && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            {/* <h2>Selected Product Details</h2> */}
             <SingleProduct product={selectedProduct} />
           </div>
         </div>
@@ -49,3 +53,4 @@ function ProductList() {
 }
 
 export default ProductList;
+
