@@ -2,11 +2,13 @@ import { db } from '../firebase/config';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 export interface Product {
+    id:                 number; 
     category:           string;
     imgURL:             string[];
     price:              number;
     shortDescription:   string;
     title:              string;
+    quantity?: number; // Lägg till quantity här
 }
 
 async function fetchProducts(): Promise<Product[]> {

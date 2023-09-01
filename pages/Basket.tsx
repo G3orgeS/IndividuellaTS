@@ -1,15 +1,14 @@
 import React from 'react';
-import ProductList from '../components/ProductList';
-import BasketComp from '../components/BasketComp'
-import '../css/Basket.css'
+import BasketComp from '../components/BasketComp';
+import { fetchProducts } from '../service/productService'
 
 function Basket() {
-    return (
-        <div className='basketpagewrapper'>
-            <ProductList isModalEnabled={false}/>
-            <BasketComp />
-        </div>
-    );
+  return (
+    <div>
+      <h1>Min Kundkorg</h1>
+      <BasketComp />
+    </div>
+  );
 }
 
 export default Basket;
