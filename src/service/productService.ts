@@ -1,8 +1,8 @@
 import { db } from '../firebase/config';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 export interface Product {
-    id:                 number; 
+    id?:                string;
     category:           string;
     imgURL:             string[];
     price:              number;
@@ -17,15 +17,18 @@ async function fetchProducts(): Promise<Product[]> {
         const productsSnapshot = await getDocs(productsCollectionRef);
         const products: Product[] = [];
         productsSnapshot.forEach((doc) => {
-            products.push(doc.data() as Product);
-        });
-
-        return products;
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        return [];
-    }
-}
+            // Hämta ID från dokumentet
+            const productData = doc.data() as Product;
+            productData.id = doc.id;
+            products.push(productData);
+          });
+      
+          return products;
+        } catch (error) {
+          console.error('Error fetching products:', error);
+          return [];
+        }
+      }
 
 async function addProduct(product: Product): Promise<void> {
     try {
@@ -40,5 +43,16 @@ async function addProduct(product: Product): Promise<void> {
     }
 }
 
+async function deleteProduct(productId: string): Promise<void> {
+    try {
+      const productDocRef = doc(db, 'Products', productId);
+      await deleteDoc(productDocRef);
+      console.log('Product deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  }
+  
 
-export { fetchProducts, addProduct };
+
+export { fetchProducts, addProduct, deleteProduct };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchProducts, Product } from '../service/productService';
 import { fetchCartItems, addCartItem, removeCartItem, updateCartItem } from '../service/cartService';
+import '../css/Basket.css'
 
 export interface CartProduct extends Product {
   quantity: number;
@@ -11,7 +12,7 @@ const BasketComp = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [cartItemIdCounter, setCartItemIdCounter] = useState<number>(1); // Initialize the counter
+  const [cartItemIdCounter, setCartItemIdCounter] = useState<number>(1);
 
   useEffect(() => {
     async function fetchAndSetProducts() {
@@ -32,17 +33,16 @@ const BasketComp = () => {
 
   const handleQuantityChange = (cartItemId: number, newQuantity: number) => {
     const cartItemToUpdate = cart.find(item => item.cartItemId === cartItemId);
-  
+
     if (!cartItemToUpdate) {
-      // Handle the case where the cart item is not found
       console.error(`Cart item with ID ${cartItemId} not found.`);
       return;
     }
-  
+
     if (newQuantity <= 0) {
       const updatedCart = cart.filter(item => item.cartItemId !== cartItemId);
       setCart(updatedCart);
-      removeCartItem(cartItemId); // Ta bort produkten från databasen
+      removeCartItem(cartItemId);
     } else {
       const updatedCart = cart.map(item => {
         if (item.cartItemId === cartItemId) {
@@ -51,10 +51,9 @@ const BasketComp = () => {
         return item;
       });
       setCart(updatedCart);
-      updateCartItem({ ...cartItemToUpdate, quantity: newQuantity }); // Uppdatera produkten i databasen
+      updateCartItem({ ...cartItemToUpdate, quantity: newQuantity });
     }
   };
-  
 
   const handleAddToCart = (product: Product) => {
     const existingCartItem = cart.find(item => item.title === product.title);
@@ -67,7 +66,7 @@ const BasketComp = () => {
       );
 
       setCart(updatedCart);
-      updateCartItem(existingCartItem); // Uppdatera produkten i databasen
+      updateCartItem(existingCartItem);
     } else {
       const cartItemId = cartItemIdCounter;
       const updatedCart = [
@@ -77,62 +76,74 @@ const BasketComp = () => {
 
       setCart(updatedCart);
       setCartItemIdCounter(cartItemIdCounter + 1);
-      addCartItem({ ...product, quantity: 1, cartItemId }); // Lägg till produkten i databasen
+      addCartItem({ ...product, quantity: 1, cartItemId });
     }
   };
 
-// lägg till local storage currentCart. spara kundkorgen ifall jag skulle ladda om sidan. 
-
   const handleSendCartToDatabase = async () => {
     try {
-      // Skicka hela kundkorgen till databasen
       await Promise.all(cart.map((cartItem) => updateCartItem(cartItem)));
       console.log('Kundkorgen har skickats till databasen.');
-  
-      // Töm kundkorgen
+
       setCart([]);
-      setTotalPrice(0); // Återställ totalpriset till noll
+      setTotalPrice(0);
       console.log('Kundkorgen har tömts.');
     } catch (error) {
       console.error('Det uppstod ett fel när kundkorgen skulle skickas till databasen:', error);
     }
   };
-  
-  
 
   return (
-    <div>
-      <h2>Produkter</h2>
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            {product.title} - {product.price}
-            <button onClick={() => {
-              console.log("Product to be added:", product);
-              handleAddToCart(product);
-            }}>Lägg till i kundkorg</button>
-          </li>
-        ))}
-      </ul>
+    <div className="basketpagewrapper">
+      <div className="basket-divwrapper">
+        <ul className='product-basket-ul'>
+        <h2>Produkter</h2>
+          {products.map((product) => (
+            <li className='basket-product-list' key={product.id}>
+              {product.imgURL.length > 0 && (
+                <img src={product.imgURL[0]} alt={`Image 0`} className="basket-product-image" />
+              )}
+              <div className='basket-info'>
+                <div className="basket-info-text">
+              {product.title} - {product.price}kr
+              </div>
+              <button className='basket-btn' onClick={() => handleAddToCart(product)}>Lägg till i kundkorg</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
 
+      <div className="basket-divwrapper">
       <h2>Kundkorg</h2>
-      <ul>
+      <ul className='basket-ul'>
         {cart.map((item) => (
           <li key={item.cartItemId}>
-            {item.title} - {item.price} SEK
-            <input
-              type="number"
-              value={item.quantity ?? 0}
-              onChange={(e) => handleQuantityChange(item.cartItemId, parseInt(e.target.value))}
-            />
-            <p>Pris: {item.price * item.quantity} SEK</p> {/* Visa priset för produkten * kvantitet */}
+            {item.imgURL.length > 0 && (
+              <img src={item.imgURL[0]} alt={`Image 0`} className="basket-image" />
+            )}
+            <div className='basket-info'>
+              <div className="basket-info-text">
+                {item.title} - {item.price} SEK
+              </div>
+              <div className="quantity-controls">
+                <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}>-</button>
+                <input
+                  type="number"
+                  value={item.quantity ?? 0}
+                  onChange={(e) => handleQuantityChange(item.cartItemId, parseInt(e.target.value))}
+                />
+                <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}>+</button>
+              </div>
+              <p>Pris: {item.price * item.quantity} SEK</p>
+            </div>
           </li>
         ))}
       </ul>
 
-      <p>Totalt pris: {totalPrice} SEK</p>
-      <button onClick={handleSendCartToDatabase}>Skicka kundkorgen till databasen</button>
-
+        <p>Totalt pris: {totalPrice} SEK</p>
+        <button className='submit-btn' onClick={handleSendCartToDatabase}>Skicka kundkorgen till databasen</button>
+      </div>
     </div>
   );
 };
