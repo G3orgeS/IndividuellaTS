@@ -1,14 +1,5 @@
 import { db } from '../firebase/config';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  deleteDoc,
-  doc,
-  setDoc,
-} from 'firebase/firestore';
+import {collection, addDoc, getDocs, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { CartProduct } from '../components/BasketComp';
 
 const CART_COLLECTION = 'carts';
@@ -74,11 +65,11 @@ export const updateCartItem = async (cartItem: CartProduct): Promise<void> => {
 export const addCartToDatabase = async (cartItems: CartProduct[], total: number): Promise<void> => {
   try {
     // Create a unique ID for the cart
-    const cartId = new Date().toISOString();
+    const cartDate = new Date().toISOString();
 
     // Create an object representing the entire cart
     const cartData = {
-      cartId,
+      cartDate,
       cartItems,
       total,
     };

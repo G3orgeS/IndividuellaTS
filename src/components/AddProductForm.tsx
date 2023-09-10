@@ -70,20 +70,21 @@ function AddProductForm() {
         <div className='wrapper'>
             <div className="column1wrapper">
         <div className="input-wrapper">
-            <label>
+            <div>
                 Titel:
-            </label>
+            </div>
             <input
                 type="text"
+                id='title'
                 name="title"
                 value={productData.title}
                 onChange={handleInputChange}
             />
         </div>
         <div className="input-wrapper">
-            <label>
+            <div>
                 Pris:
-            </label>
+            </div>
             <input
                 type="number"
                 name="price"
@@ -92,9 +93,9 @@ function AddProductForm() {
             />
         </div>
         <div className="input-wrapper">
-            <label>
+            <div>
                 Kategori:
-            </label>
+            </div>
             <input
                 type="text"
                 name="category"
@@ -103,9 +104,9 @@ function AddProductForm() {
             />
         </div>
         <div className="input-wrapper">
-            <label>
+            <div>
                 Kort beskrivning:
-            </label>
+            </div>
             <input
                 type="text"
                 name="shortDescription"
@@ -117,11 +118,13 @@ function AddProductForm() {
         <div className="column1wrapper">
         {productData.imgURL.map((url, index) => (
             <div className="input-wrapper" key={index}>
-                <label>
+                <div>
                     Bild {index + 1} URL:
-                </label>
+                </div>
                 <input
                     type="text"
+                    id={`imgURL${index}`} // Lägg till ett unikt id baserat på index
+                    name={`imgURL${index}`} 
                     value={url}
                     onChange={(event) => handleImageChange(event, index)}
                 />

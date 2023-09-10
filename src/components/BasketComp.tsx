@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchProducts, Product } from '../service/productService';
-import { fetchCartItems, addCartItem, removeCartItem, updateCartItem } from '../service/cartService';
+import { removeCartItem, updateCartItem, addCartToDatabase } from '../service/cartService';
 import '../css/Basket.css'
 
 export interface CartProduct extends Product {
-  quantity: number;
-  cartItemId: number;
+  quantity:       number;
+  cartItemId:     number;
 }
 
 const BasketComp = () => {
@@ -76,15 +76,17 @@ const BasketComp = () => {
 
       setCart(updatedCart);
       setCartItemIdCounter(cartItemIdCounter + 1);
-      addCartItem({ ...product, quantity: 1, cartItemId });
     }
   };
 
   const handleSendCartToDatabase = async () => {
     try {
-      await Promise.all(cart.map((cartItem) => updateCartItem(cartItem)));
+      // Anropa din cartService-funktion för att lägga till hela kundkorgen i databasen
+      await addCartToDatabase(cart, totalPrice);
+
       console.log('Kundkorgen har skickats till databasen.');
 
+      // Rensa kundkorgen och uppdatera frontend
       setCart([]);
       setTotalPrice(0);
       console.log('Kundkorgen har tömts.');
@@ -92,6 +94,7 @@ const BasketComp = () => {
       console.error('Det uppstod ett fel när kundkorgen skulle skickas till databasen:', error);
     }
   };
+
 
   return (
     <div className="basketpagewrapper">
