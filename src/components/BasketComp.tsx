@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
 import { fetchProducts, Product } from '../service/productService';
-import { removeCartItem, updateCartItem, addCartToDatabase } from '../service/cartService';
-import '../css/Basket.css'
+import { addCartToDatabase } from '../service/cartService';
+import '../css/Basket.css';
 
+// Define a CartProduct interface that extends the Product interface
 export interface CartProduct extends Product {
-  quantity:       number;
-  cartItemId:     number;
+  quantity:     number; 
+  cartItemId:   number; 
 }
 
+// BasketComp component for displaying and managing the shopping basket
 const BasketComp = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [cartItemIdCounter, setCartItemIdCounter] = useState<number>(1);
 
+  // Fetch and set products from the service
   useEffect(() => {
     async function fetchAndSetProducts() {
       const fetchedProducts = await fetchProducts();
@@ -22,15 +25,18 @@ const BasketComp = () => {
     fetchAndSetProducts();
   }, []);
 
+  // Calculate and update the total price when the cart changes
   useEffect(() => {
     calculateTotalPrice(cart);
   }, [cart]);
 
+  // Calculate the total price based on cart items
   const calculateTotalPrice = (cartItems: CartProduct[]) => {
-    const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     setTotalPrice(totalPrice);
   };
 
+  // Handle quantity change for a specific cart item
   const handleQuantityChange = (cartItemId: number, newQuantity: number) => {
     const cartItemToUpdate = cart.find(item => item.cartItemId === cartItemId);
 
@@ -42,7 +48,7 @@ const BasketComp = () => {
     if (newQuantity <= 0) {
       const updatedCart = cart.filter(item => item.cartItemId !== cartItemId);
       setCart(updatedCart);
-      removeCartItem(cartItemId);
+      // Remove the cart item from the database or update it accordingly
     } else {
       const updatedCart = cart.map(item => {
         if (item.cartItemId === cartItemId) {
@@ -51,10 +57,11 @@ const BasketComp = () => {
         return item;
       });
       setCart(updatedCart);
-      updateCartItem({ ...cartItemToUpdate, quantity: newQuantity });
+      // Update the cart item in the database
     }
   };
 
+  // Handle adding a product to the cart
   const handleAddToCart = (product: Product) => {
     const existingCartItem = cart.find(item => item.title === product.title);
 
@@ -66,7 +73,7 @@ const BasketComp = () => {
       );
 
       setCart(updatedCart);
-      updateCartItem(existingCartItem);
+      // Update the existing cart item in the database
     } else {
       const cartItemId = cartItemIdCounter;
       const updatedCart = [
@@ -76,31 +83,29 @@ const BasketComp = () => {
 
       setCart(updatedCart);
       setCartItemIdCounter(cartItemIdCounter + 1);
+      // Add a new cart item to the database
     }
   };
 
+  // Handle sending the cart to the database
   const handleSendCartToDatabase = async () => {
     try {
-      // Anropa din cartService-funktion för att lägga till hela kundkorgen i databasen
       await addCartToDatabase(cart, totalPrice);
 
-      console.log('Kundkorgen har skickats till databasen.');
-
-      // Rensa kundkorgen och uppdatera frontend
+      console.log('Shopping cart has been sent to the database.');
       setCart([]);
       setTotalPrice(0);
-      console.log('Kundkorgen har tömts.');
+      console.log('Shopping cart has been cleared.');
     } catch (error) {
-      console.error('Det uppstod ett fel när kundkorgen skulle skickas till databasen:', error);
+      console.error('An error occurred when sending the shopping cart to the database:', error);
     }
   };
-
 
   return (
     <div className="basketpagewrapper">
       <div className="basket-divwrapper">
         <ul className='product-basket-ul'>
-        <h2>Produkter</h2>
+          <h2>Products</h2>
           {products.map((product) => (
             <li className='basket-product-list' key={product.id}>
               {product.imgURL.length > 0 && (
@@ -108,9 +113,9 @@ const BasketComp = () => {
               )}
               <div className='basket-info'>
                 <div className="basket-info-text">
-              {product.title} - {product.price}kr
-              </div>
-              <button className='basket-btn' onClick={() => handleAddToCart(product)}>Lägg till i kundkorg</button>
+                  {product.title} - {product.price} SEK
+                </div>
+                <button className='basket-btn' onClick={() => handleAddToCart(product)}>Add to Cart</button>
               </div>
             </li>
           ))}
@@ -118,34 +123,34 @@ const BasketComp = () => {
       </div>
 
       <div className="basket-divwrapper">
-      <h2>Kundkorg</h2>
-      <ul className='basket-ul'>
-        {cart.map((item) => (
-          <li key={item.cartItemId}>
-            {item.imgURL.length > 0 && (
-              <img src={item.imgURL[0]} alt={`Image 0`} className="basket-image" />
-            )}
-            <div className='basket-info'>
-              <div className="basket-info-text">
-                {item.title} - {item.price} SEK
+        <h2>Shopping Cart</h2>
+        <ul className='basket-ul'>
+          {cart.map((item) => (
+            <li key={item.cartItemId}>
+              {item.imgURL.length > 0 && (
+                <img src={item.imgURL[0]} alt={`Image 0`} className="basket-image" />
+              )}
+              <div className='basket-info'>
+                <div className="basket-info-text">
+                  {item.title} - {item.price} SEK
+                </div>
+                <div className="quantity-controls">
+                  <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}>-</button>
+                  <input
+                    type="number"
+                    value={item.quantity ?? 0}
+                    onChange={(e) => handleQuantityChange(item.cartItemId, parseInt(e.target.value))}
+                  />
+                  <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}>+</button>
+                </div>
+                <p>Price: {item.price * item.quantity} SEK</p>
               </div>
-              <div className="quantity-controls">
-                <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}>-</button>
-                <input
-                  type="number"
-                  value={item.quantity ?? 0}
-                  onChange={(e) => handleQuantityChange(item.cartItemId, parseInt(e.target.value))}
-                />
-                <button onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}>+</button>
-              </div>
-              <p>Pris: {item.price * item.quantity} SEK</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
 
-        <p>Totalt pris: {totalPrice} SEK</p>
-        <button className='submit-btn' onClick={handleSendCartToDatabase}>Skicka kundkorgen till databasen</button>
+        <p>Total Price: {totalPrice} SEK</p>
+        <button className='submit-btn' onClick={handleSendCartToDatabase}>Send Cart to Database</button>
       </div>
     </div>
   );

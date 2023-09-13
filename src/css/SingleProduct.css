@@ -1,16 +1,19 @@
+/* Single Product Container */
 .single-product {
     text-align: center;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    cursor:auto;
+    cursor: auto; 
 }
 
+/* Header 2 within Single Product */
 .single-product h2 {
     margin-top: 0;
 }
 
+/* Image within Single Product */
 .single-product img {
     width: 200px;
     height: 200px;

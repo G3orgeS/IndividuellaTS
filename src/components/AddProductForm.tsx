@@ -1,5 +1,5 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { useAuth } from '../../auth/AuthContext'
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { useAuth } from '../auth/AuthContext'
 import { addProduct } from '../service/productService';
 import '../css/AddProductForm.css'
 
@@ -10,30 +10,34 @@ function AddProductForm() {
         price: 0,
         category: '',
         shortDescription: '',
-        imgURL: ['', '', '', '', '']
+        imgURL: ['', '', '', '', ''],
+        createdAt: new Date().toISOString()
     });
     const [error, setError] = useState('');
 
+    // Handle input field changes
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setProductData({ ...productData, [name]: value });
     };
 
+    // Handle image URL changes
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>, index: number) => {
         const newImgURL = [...productData.imgURL];
         newImgURL[index] = event.target.value;
         setProductData({ ...productData, imgURL: newImgURL });
     };
 
+    // Handle form submission
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         if (!isLoggedIn) { 
-            setError('Du måste vara inloggad för att lägga till en produkt.');
+            setError('You must be logged in to add a product.');
             return;
         }
 
-        // Validering av inputfält
+        // Input field validation
         if (
             !productData.title ||
             !productData.price ||
@@ -41,102 +45,102 @@ function AddProductForm() {
             !productData.shortDescription ||
             productData.imgURL.some(url => !url)
         ) {
-            setError('Fyll i alla fält.');
+            setError('Fill in all fields.');
             return;
         }
 
         try {
             await addProduct(productData); 
-            console.log('Skickade produktdata till databasen:', productData);
+            console.log('Sent product data to the database:', productData);
 
+            // Reset the form data
             setProductData({
                 title: '',
                 price: 0,
                 category: '',
                 shortDescription: '',
-                imgURL: ['', '', '', '', '']
+                imgURL: ['', '', '', '', ''],
+                createdAt: ''
             });
             setError('');
         } catch (err) {
-            setError('Något gick fel när produkten skulle läggas till.');
+            setError('Something went wrong when adding the product.');
         }
     };
 
     return (
-<div className="add-product-container">
-    <form className="add-product-form" onSubmit={handleSubmit}>
-        <h1>Lägg till produkt</h1>
-    {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className='wrapper'>
-            <div className="column1wrapper">
-        <div className="input-wrapper">
-            <div>
-                Titel:
-            </div>
-            <input
-                type="text"
-                id='title'
-                name="title"
-                value={productData.title}
-                onChange={handleInputChange}
-            />
-        </div>
-        <div className="input-wrapper">
-            <div>
-                Pris:
-            </div>
-            <input
-                type="number"
-                name="price"
-                value={productData.price}
-                onChange={handleInputChange}
-            />
-        </div>
-        <div className="input-wrapper">
-            <div>
-                Kategori:
-            </div>
-            <input
-                type="text"
-                name="category"
-                value={productData.category}
-                onChange={handleInputChange}
-            />
-        </div>
-        <div className="input-wrapper">
-            <div>
-                Kort beskrivning:
-            </div>
-            <input
-                type="text"
-                name="shortDescription"
-                value={productData.shortDescription}
-                onChange={handleInputChange}
-            />
-        </div>
-        </div>
-        <div className="column1wrapper">
-        {productData.imgURL.map((url, index) => (
-            <div className="input-wrapper" key={index}>
-                <div>
-                    Bild {index + 1} URL:
+        <div className="add-product-container">
+            <form className="add-product-form" onSubmit={handleSubmit}>
+                <h1>Add Product</h1>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div className='wrapper'>
+                    <div className="column1wrapper">
+                        <div className="input-wrapper">
+                            <div>
+                                Title:
+                            </div>
+                            <input
+                                type="text"
+                                id='title'
+                                name="title"
+                                value={productData.title}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="input-wrapper">
+                            <div>
+                                Price:
+                            </div>
+                            <input
+                                type="number"
+                                name="price"
+                                value={productData.price}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="input-wrapper">
+                            <div>
+                                Category:
+                            </div>
+                            <input
+                                type="text"
+                                name="category"
+                                value={productData.category}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="input-wrapper">
+                            <div>
+                                Short Description:
+                            </div>
+                            <input
+                                type="text"
+                                name="shortDescription"
+                                value={productData.shortDescription}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="column1wrapper">
+                        {productData.imgURL.map((url, index) => (
+                            <div className="input-wrapper" key={index}>
+                                <div>
+                                    Image {index + 1} URL:
+                                </div>
+                                <input
+                                    type="text"
+                                    id={`imgURL${index}`} // Add a unique ID based on the index
+                                    name={`imgURL${index}`} 
+                                    value={url}
+                                    onChange={(event) => handleImageChange(event, index)}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <input
-                    type="text"
-                    id={`imgURL${index}`} // Lägg till ett unikt id baserat på index
-                    name={`imgURL${index}`} 
-                    value={url}
-                    onChange={(event) => handleImageChange(event, index)}
-                />
-            </div>
-            
-        ))}
+                <button type="submit">Add Product</button>
+            </form>
         </div>
-        </div>
-        <button type="submit">Lägg till produkt</button>
-    </form>
-</div>
-
     );
 }
 

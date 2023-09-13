@@ -1,11 +1,11 @@
 import React from 'react';
 import { Product } from '../service/productService';
-import '../css/SingleProduct.css'; // Importera den nya CSS-filen
+import '../css/SingleProduct.css';
 
 interface SingleProductProps {
     product: Product;
 }
-// prop is in cart, ändrar om jag har korgen 
+// If 'prop' is in the cart, modify accordingly
 const SingleProduct: React.FC<SingleProductProps> = ({ product }) => {
     return (
         <div className="single-product">
@@ -21,3 +21,4 @@ const SingleProduct: React.FC<SingleProductProps> = ({ product }) => {
 };
 
 export default SingleProduct;
+

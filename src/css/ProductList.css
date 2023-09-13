@@ -1,3 +1,4 @@
+/* Product List Container */
 .product-list-container {
     display: flex;
     flex-direction: column;
@@ -5,11 +6,13 @@
     padding: 20px;
 }
 
+/* Product List */
 .product-list {
     list-style: none;
     padding: 0;
 }
 
+/* Product List Item */
 .product-list li {
     cursor: pointer;
     margin-bottom: 10px;
@@ -19,21 +22,28 @@
     transition: background-color 0.3s ease;
 }
 
+/* Product List Item on Hover */
 .product-list li:hover {
     background-color: #f2f2f2;
 }
+
+/* Product List Image */
 .productList-image {
-    width: 100px; 
-    height: 40px; 
-    margin-right: 10px; 
-    object-fit: cover; 
+    width: 100px;
+    height: 40px;
+    margin-right: 10px;
+    object-fit: cover;
     border-radius: 5px;
 }
+
+/* Product Item */
 .product-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
+/* Modal Overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -47,31 +57,56 @@
     cursor: pointer;
 }
 
+/* Modal Content */
 .modal-content {
     background-color: white;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    position: relative; /* Lägg till position: relative; */
+    position: relative; /* Add position: relative; */
 }
 
+/* Close Modal Button */
 .close-modal {
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
-    font-size:xx-large;
+    font-size: xx-large;
 }
-.listdelete{
+
+/* List Delete Button */
+.listdelete {
     background-color: #ff0000;
     color: white;
     border: none;
     width: 20%;
     height: 40px;
-    /* padding: 20px 70px; */
     border-radius: 5px;
     cursor: pointer;
 }
+
+/* List Delete Button on Hover */
 .listdelete:hover {
     background-color: #801212;
 }
-
+.sortwrapper {
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+}
+/* List Sort button */
+.btn-sort {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        width: 80px;
+        height: 40;
+        border-radius: 5px;
+        cursor: pointer;
+    padding: 5px;
+    }
+    /* Hover effect for the button */
+    .btn-sort:hover {
+        background-color: #0056b3;
+    }
+    

@@ -1,43 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { fetchProducts, Product, deleteProduct } from '../service/productService';
+import { useEffect, useState } from 'react';
+import { Product, deleteProduct, fetchProductsSortedByCreatedAt } from '../service/productService';
 import SingleProduct from './SingleProduct';
 import '../css/ProductList.css';
-import { AuthContext, useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../auth/AuthContext';
 
 interface ProductListProps {
   isModalEnabled: boolean;
 }
 
 function ProductList({ isModalEnabled }: ProductListProps) {
-  const { isLoggedIn, login, logout } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [canOpenModal, setCanOpenModal] = useState(true); // Lägg till canOpenModal-flaggan
+
+  // Function to toggle the sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
 
   useEffect(() => {
     async function fetchAndSetProducts() {
-      const productsData = await fetchProducts();
+      const productsData = await fetchProductsSortedByCreatedAt(sortOrder);
       setProducts(productsData);
     }
 
     fetchAndSetProducts();
-  }, []);
+  }, [sortOrder]);
 
+  // Handle a click on a product item
   const handleProductClick = (product: Product) => {
-    if (isModalEnabled) {
+    if (isModalEnabled && canOpenModal) { // Kontrollera canOpenModal-flaggan
       setSelectedProduct(product);
       console.log('Product ID:', product.id);
     }
   };
 
+  // Close the modal
   const closeModal = () => {
     setSelectedProduct(null);
   };
 
+  // Handle the deletion of a product
   const handleDeleteProduct = async (productId: string) => {
     try {
+      setCanOpenModal(false); // Stäng av möjligheten att öppna modalen
       await deleteProduct(productId);
+      // Ta bort den raderade produkten från products-listan
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
     } catch (error) {
       console.error('Error deleting product:', error);
+    } finally {
+      setCanOpenModal(true); // Återaktivera möjligheten att öppna modalen när raderingen är klar
     }
   };
 
@@ -45,6 +62,11 @@ function ProductList({ isModalEnabled }: ProductListProps) {
     <div className="product-list-container">
       <h1>Products</h1>
       <ul className="product-list">
+        <div className="sortwrapper">
+          <button className='btn-sort' onClick={toggleSortOrder}>
+            Sort latest added {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+          </button>
+        </div>
         {products.map((product, index) => (
           <li key={index} onClick={() => handleProductClick(product)}>
             <div className="product-item">
