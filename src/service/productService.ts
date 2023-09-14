@@ -58,7 +58,6 @@ async function fetchProductsSortedByCreatedAt(sortOrder: 'asc' | 'desc'): Promis
   }
 }
 
-
 // Function to add a product to the Firestore database
 async function addProduct(product: Product): Promise<void> {
   try {

@@ -45,16 +45,15 @@ function ProductList({ isModalEnabled }: ProductListProps) {
   // Handle the deletion of a product
   const handleDeleteProduct = async (productId: string) => {
     try {
-      setCanOpenModal(false); // Stäng av möjligheten att öppna modalen
+      setCanOpenModal(false); 
       await deleteProduct(productId);
-      // Ta bort den raderade produkten från products-listan
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
       );
     } catch (error) {
       console.error('Error deleting product:', error);
     } finally {
-      setCanOpenModal(true); // Återaktivera möjligheten att öppna modalen när raderingen är klar
+      setCanOpenModal(true); 
     }
   };
 
@@ -74,10 +73,11 @@ function ProductList({ isModalEnabled }: ProductListProps) {
                 <img src={product.imgURL[0]} alt={`Image 0`} className="productList-image" />
               )}
               <span className="product-title">{product.title}</span>
-              {isLoggedIn && (
+              {isLoggedIn && isModalEnabled && (
                 <button
                   className="listdelete"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation()
                     if (product.id) {
                       console.log('Product ID to be deleted:', product.id);
                       handleDeleteProduct(product.id.toString());

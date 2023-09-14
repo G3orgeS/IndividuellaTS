@@ -1,17 +1,39 @@
 import { db } from '../firebase/config';
-import { collection, addDoc, getDocs, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { CartProduct } from '../components/BasketComp';
 
-const CART_COLLECTION = 'cart';
+const cartRef = 'cart';
 
 // Add a cart item to Firestore
 async function addCartItem(cartItem: CartProduct): Promise<void> {
   try {
-    await addDoc(collection(db, CART_COLLECTION), cartItem);
+    await addDoc(collection(db, cartRef), cartItem);
   } catch (error) {
     console.error('Error adding cart item:', error);
   }
 }
+
+// Add the whole cart to the database
+const addCartToDatabase = async (cartItems: CartProduct[], total: number): Promise<void> => {
+  try {
+    // Create a unique ID for the cart
+    const cartDate = new Date().toISOString();
+
+    // Create an object representing the entire cart
+    const cartData = {
+      cartDate,
+      cartItems,
+      total,
+    };
+
+    // Add the entire cart as an object in Firestore
+    await addDoc(collection(db, cartRef), cartData);
+  } catch (error) {
+    console.error('Error adding cart to database:', error);
+  }
+};
+
+export { addCartItem, addCartToDatabase };
 
 // Remove a cart item from Firestore
 // const removeCartItem = async (cartItemId: number): Promise<void> => {
@@ -42,25 +64,3 @@ async function addCartItem(cartItem: CartProduct): Promise<void> {
 //     console.error('Error updating cart item:', error);
 //   }
 // };
-
-// Add the whole cart to the database
-const addCartToDatabase = async (cartItems: CartProduct[], total: number): Promise<void> => {
-  try {
-    // Create a unique ID for the cart
-    const cartDate = new Date().toISOString();
-
-    // Create an object representing the entire cart
-    const cartData = {
-      cartDate,
-      cartItems,
-      total,
-    };
-
-    // Add the entire cart as an object in Firestore
-    await addDoc(collection(db, CART_COLLECTION), cartData);
-  } catch (error) {
-    console.error('Error adding cart to database:', error);
-  }
-};
-
-export { addCartItem, addCartToDatabase };
