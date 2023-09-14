@@ -129,7 +129,7 @@ function AddProductForm() {
                                 </div>
                                 <input
                                     type="text"
-                                    id={`imgURL${index}`} // Add a unique ID based on the index
+                                    id={`imgURL${index}`} 
                                     name={`imgURL${index}`} 
                                     value={url}
                                     onChange={(event) => handleImageChange(event, index)}

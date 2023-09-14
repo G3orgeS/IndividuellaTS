@@ -1,5 +1,6 @@
 import '../css/Profile.css'
-import programmerGif from '../auth/test/do-not-touch-it-programmer.gif';
+import programmerGif from '../auth/img/do-not-touch-it-programmer.gif';
+
 
 function Profile() {
     return (

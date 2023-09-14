@@ -8,7 +8,7 @@ export interface Product {
   price:            number;
   shortDescription: string;
   title:            string;
-  quantity?:        number;
+  // quantity?:        number;
   createdAt:        string; 
 }
 

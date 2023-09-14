@@ -2,21 +2,9 @@ import { db } from '../firebase/config';
 import { collection, addDoc } from 'firebase/firestore';
 import { CartProduct } from '../components/BasketComp';
 
-const cartRef = 'cart';
-
-// Add a cart item to Firestore
-async function addCartItem(cartItem: CartProduct): Promise<void> {
-  try {
-    await addDoc(collection(db, cartRef), cartItem);
-  } catch (error) {
-    console.error('Error adding cart item:', error);
-  }
-}
-
 // Add the whole cart to the database
 const addCartToDatabase = async (cartItems: CartProduct[], total: number): Promise<void> => {
   try {
-    // Create a unique ID for the cart
     const cartDate = new Date().toISOString();
 
     // Create an object representing the entire cart
@@ -27,14 +15,15 @@ const addCartToDatabase = async (cartItems: CartProduct[], total: number): Promi
     };
 
     // Add the entire cart as an object in Firestore
-    await addDoc(collection(db, cartRef), cartData);
+    await addDoc(collection(db, 'cart'), cartData);
   } catch (error) {
     console.error('Error adding cart to database:', error);
   }
 };
 
-export { addCartItem, addCartToDatabase };
+export {  addCartToDatabase };
 
+// earlier code, remove cart and update cart. 
 // Remove a cart item from Firestore
 // const removeCartItem = async (cartItemId: number): Promise<void> => {
 //   try {
@@ -64,3 +53,13 @@ export { addCartItem, addCartToDatabase };
 //     console.error('Error updating cart item:', error);
 //   }
 // };
+
+
+// Add a cart item to Firestore
+// async function addCartItem(cartItem: CartProduct): Promise<void> {
+//   try {
+//     await addDoc(collection(db, cartRef), cartItem);
+//   } catch (error) {
+//     console.error('Error adding cart item:', error);
+//   }
+// }
