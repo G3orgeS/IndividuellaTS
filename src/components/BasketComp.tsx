@@ -5,14 +5,25 @@ import '../css/Basket.css';
 
 // Define a CartProduct interface that extends the Product interface
 export interface CartProduct extends Product {
-  quantity:     number; 
-  cartItemId:   number; 
+  quantity: number;
+  cartItemId: number;
 }
+
+// Function to save the cart to local storage
+const saveCartToLocalStorage = (cart: CartProduct[]) => {
+  localStorage.setItem('cart', JSON.stringify(cart));
+};
+
+// Function to load the cart from local storage
+const loadCartFromLocalStorage = (): CartProduct[] => {
+  const storedCart = localStorage.getItem('cart');
+  return storedCart ? JSON.parse(storedCart) : [];
+};
 
 // BasketComp component for displaying and managing the shopping basket
 const BasketComp = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartProduct[]>([]);
+  const [cart, setCart] = useState<CartProduct[]>(loadCartFromLocalStorage());
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [cartItemIdCounter, setCartItemIdCounter] = useState<number>(1);
 
@@ -36,21 +47,23 @@ const BasketComp = () => {
     setTotalPrice(totalPrice);
   };
 
+  let updatedCart: CartProduct[] = [...cart];
+
   // Handle quantity change for a specific cart item
   const handleQuantityChange = (cartItemId: number, newQuantity: number) => {
     const cartItemToUpdate = cart.find(item => item.cartItemId === cartItemId);
-
+  
     if (!cartItemToUpdate) {
       console.error(`Cart item with ID ${cartItemId} not found.`);
       return;
     }
-
+  
     if (newQuantity <= 0) {
-      const updatedCart = cart.filter(item => item.cartItemId !== cartItemId);
+      updatedCart = cart.filter(item => item.cartItemId !== cartItemId);
       setCart(updatedCart);
       // Remove the cart item from the database or update it accordingly
     } else {
-      const updatedCart = cart.map(item => {
+      updatedCart = cart.map(item => {
         if (item.cartItemId === cartItemId) {
           return { ...item, quantity: newQuantity };
         }
@@ -59,6 +72,9 @@ const BasketComp = () => {
       setCart(updatedCart);
       // Update the cart item in the database
     }
+  
+    // After updating the cart, save it to local storage
+    saveCartToLocalStorage(updatedCart);
   };
 
   // Handle adding a product to the cart
@@ -85,6 +101,9 @@ const BasketComp = () => {
       setCartItemIdCounter(cartItemIdCounter + 1);
       // Add a new cart item to the database
     }
+
+    // After updating the cart, save it to local storage
+    saveCartToLocalStorage(updatedCart);
   };
 
   // Handle sending the cart to the database
@@ -96,6 +115,9 @@ const BasketComp = () => {
       setCart([]);
       setTotalPrice(0);
       console.log('Shopping cart has been cleared.');
+
+      // After clearing the cart, also remove it from local storage
+      saveCartToLocalStorage([]);
     } catch (error) {
       console.error('An error occurred when sending the shopping cart to the database:', error);
     }
