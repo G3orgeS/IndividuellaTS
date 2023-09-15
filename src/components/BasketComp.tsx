@@ -47,8 +47,6 @@ const BasketComp = () => {
     setTotalPrice(totalPrice);
   };
 
-  let updatedCart: CartProduct[] = [...cart];
-
   // Handle quantity change for a specific cart item
   const handleQuantityChange = (cartItemId: number, newQuantity: number) => {
     const cartItemToUpdate = cart.find(item => item.cartItemId === cartItemId);
@@ -57,6 +55,8 @@ const BasketComp = () => {
       console.error(`Cart item with ID ${cartItemId} not found.`);
       return;
     }
+  
+    let updatedCart: CartProduct[] = [...cart]; 
   
     if (newQuantity <= 0) {
       updatedCart = cart.filter(item => item.cartItemId !== cartItemId);
@@ -81,22 +81,22 @@ const BasketComp = () => {
   const handleAddToCart = (product: Product) => {
     const existingCartItem = cart.find(item => item.title === product.title);
 
+    let updatedCart: CartProduct[] = [...cart]; 
+
     if (existingCartItem) {
-      const updatedCart = cart.map(item =>
+      updatedCart = cart.map(item =>
         item.title === existingCartItem.title
           ? { ...item, quantity: item.quantity + 1 }
           : item
       );
-
       setCart(updatedCart);
       // Update the existing cart item in the database
     } else {
       const cartItemId = cartItemIdCounter;
-      const updatedCart = [
+      updatedCart = [
         ...cart,
         { ...product, quantity: 1, cartItemId }
       ];
-
       setCart(updatedCart);
       setCartItemIdCounter(cartItemIdCounter + 1);
       // Add a new cart item to the database
